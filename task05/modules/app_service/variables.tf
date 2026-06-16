@@ -14,16 +14,19 @@ variable "service_plan_id" {
   description = "Id of service_plan"
   type        = string
 }
-variable "allow_IP_rule_name" {
-  description = "Name of IP rule"
-  type        = string
-}
 
-variable "Verification_IP_address" {
-  description = "IP address Verification"
-  type        = string
-}
 variable "creator" {
   description = "creator of resource "
   type        = string
+}
+
+variable "ip_restrictions" {
+  description = "IP restriction rules for the web app"
+  type = list(object({
+    name        = string
+    action      = string
+    priority    = number
+    ip_address  = optional(string)
+    service_tag = optional(string)
+  }))
 }

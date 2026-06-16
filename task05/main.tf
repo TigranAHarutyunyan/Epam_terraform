@@ -28,13 +28,25 @@ module "webapp" {
   source   = "./modules/app_service"
   for_each = var.app
 
-  app_name                = each.value.name
-  location                = each.value.location
-  resource_group_name     = module.resource_groups[each.value.resource_group].name
-  service_plan_id         = module.asp[each.value.service_plan].service_plan_id
-  allow_IP_rule_name      = each.value.allow_IP_rule_name
-  Verification_IP_address = each.value.Verification_IP_address
-  creator                 = var.creator
+  app_name            = each.value.name
+  location            = each.value.location
+  resource_group_name = module.resource_groups[each.value.resource_group].name
+  service_plan_id     = module.asp[each.value.service_plan].service_plan_id
+  creator             = var.creator
+  ip_restrictions = [
+    {
+      name       = each.value.allow_IP_rule_name
+      action     = "Allow"
+      priority   = 100
+      ip_address = each.value.Verification_IP_address
+    },
+    {
+      name        = each.value.allow_IP_rule_name
+      action      = "Allow"
+      priority    = 101
+      service_tag = "AzureTrafficManager"
+    }
+  ]
 }
 module "tm" {
   source                 = "./modules/traffic_manager"
@@ -43,6 +55,5 @@ module "tm" {
   resource_group_name    = module.resource_groups["rg3"].name
   traffic_routing_method = var.tm.traffic_routing_method
   endpoint_name          = var.endpoint
-  for_each               = var.app
-  target_resource_id     = [module.webapp[each.key].id]
+  target_resource_id     = [for k in keys(var.app) : module.webapp[k].id]
 }

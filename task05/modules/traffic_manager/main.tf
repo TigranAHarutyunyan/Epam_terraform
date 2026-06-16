@@ -25,6 +25,6 @@ resource "azurerm_traffic_manager_azure_endpoint" "this" {
   profile_id         = azurerm_traffic_manager_profile.this.id
   target_resource_id = var.target_resource_id[count.index]
   enabled            = true
-  priority           = 1
+  priority           = count.index + 1
 
 }
