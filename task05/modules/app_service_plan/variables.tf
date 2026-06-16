@@ -28,6 +28,6 @@ variable "worker_count" {
   type        = number
 }
 variable "creator" {
-    description = "creator of resource "
-    type = string
+  description = "creator of resource "
+  type        = string
 }

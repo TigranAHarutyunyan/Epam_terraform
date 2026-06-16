@@ -14,10 +14,10 @@ resource "azurerm_windows_web_app" "this" {
       priority   = 100
     }
     ip_restriction {
-        name = var.allow_IP_rule_name
-        action = "Allow"
-        service_tag = "AzureTrafficManager"
-        priority = 101
+      name        = var.allow_IP_rule_name
+      action      = "Allow"
+      service_tag = "AzureTrafficManager"
+      priority    = 101
 
     }
   }
