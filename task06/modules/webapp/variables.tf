@@ -15,6 +15,7 @@ variable "asp_name" {
 variable "sql_connection_string" {
   type        = string
   description = "String of connection database"
+  sensitive =true
 }
 variable "rg_name" {
   type        = string

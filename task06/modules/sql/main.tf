@@ -12,7 +12,7 @@ resource "azurerm_mssql_server" "sql_server" {
 resource "azurerm_mssql_database" "sql_database" {
   name      = var.server_name
   server_id = azurerm_mssql_server.sql_server.id
-  sku_name  = "Basic"
+  sku_name  = "S2"
 
   tags = {
     Creator = var.creator
