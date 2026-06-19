@@ -3,5 +3,6 @@ output "tenant_id" {
   description = "Tenat Id "
 }
 output "random_password" {
-  random_password.sql_admin_password.result
+  value       = random_password.sql_admin_password.result
+  description = "random password "
 }
