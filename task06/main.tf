@@ -2,7 +2,7 @@ provider "azurerm" {
   features {}
 
 }
-resource "random_string" "sql_admin_password" {
+resource "random_string" "sql_admin_username" {
   length  = 12
   special = false
   upper   = false
