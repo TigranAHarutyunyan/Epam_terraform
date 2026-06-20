@@ -17,7 +17,7 @@ data "azurerm_key_vault" "existing_kv" {
 }
 resource "azurerm_key_vault_secret" "sql_admin_username" {
   name         = var.key_vault_name_for_sql
-  value        = "admin"
+  value        = var.sql_username
   key_vault_id = data.azurerm_key_vault.existing_kv.id
 }
 resource "azurerm_key_vault_secret" "sql_admin_password" {
@@ -39,7 +39,7 @@ module "sql" {
   creator                = local.creator
   server_name            = local.sql_server_name
   db_name                = local.sql_db_name
-  administrator_login    = "admin"
+  administrator_login    = var.sql.username
   administrator_password = random_password.sql_admin_password.result
   region                 = azurerm_resource_group.rg.location
   tenant_id              = data.azurerm_client_config.current.tenant_id

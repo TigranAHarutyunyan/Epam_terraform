@@ -54,3 +54,7 @@ variable "sku_plan" {
   type        = string
   description = "name of plan"
 }
+variable "sql_username" {
+  type = variable
+  description = "username of sql user "
+}
