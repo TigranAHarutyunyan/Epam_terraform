@@ -39,7 +39,7 @@ module "sql" {
   creator                = local.creator
   server_name            = local.sql_server_name
   db_name                = local.sql_db_name
-  administrator_login    = random_string.sql_admin_username.result
+  administrator_login    = "admin"
   administrator_password = random_password.sql_admin_password.result
   region                 = azurerm_resource_group.rg.location
   tenant_id              = data.azurerm_client_config.current.tenant_id
