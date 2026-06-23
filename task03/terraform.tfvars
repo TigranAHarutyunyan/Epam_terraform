@@ -1,0 +1,11 @@
+resource_group_name      = "cmaz-j5tku7ra-mod3-rg"
+storage_account_name     = "cmazj5tku7rasa"
+account_tier             = "Standard"
+account_replication_type = "LRS"
+vnet_name                = "cmaz-j5tku7ra-mod3-vnet"
+vnet_address_space       = ["10.0.0.0/16"]
+subnet1_name             = "frontend"
+subnet1_prefix           = ["10.0.1.0/24"]
+subnet2_name             = "backend"
+subnet2_prefix           = ["10.0.2.0/24"]
+creator                  = "tigran_harutyunyan@epam.com"
