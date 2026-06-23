@@ -1,6 +1,5 @@
 provider "azurerm" {
   features {}
-
 }
 resource "azurerm_resource_group" "rg" {
   name     = local.rg_name
@@ -21,11 +20,11 @@ resource "azurerm_storage_account" "sa" {
 
 import {
   to = azurerm_resource_group.rg
-  id = "/subscriptions/8bb65153-67c2-4fdf-aa84-6a4e4171adb5/resourceGroups/cmtr-j5tku7ra-mod7-rg/providers/Microsoft.Storage/storageAccounts/cmtrj5tku7ramod7sa"
+  id = "/subscriptions/8bb65153-67c2-4fdf-aa84-6a4e4171adb5/resourceGroups/cmtr-j5tku7ra-mod7-rg"
 }
 import {
   to = azurerm_storage_account.sa
-  id = "/subscriptions/8bb65153-67c2-4fdf-aa84-6a4e4171adb5/resourceGroups/cmtr-j5tku7ra-mod7-rg"
+  id = "/subscriptions/8bb65153-67c2-4fdf-aa84-6a4e4171adb5/resourceGroups/cmtr-j5tku7ra-mod7-rg/providers/Microsoft.Storage/storageAccounts/cmtrj5tku7ramod7sa"
 }
 module "cdn" {
   source             = "./modules/cdn"
