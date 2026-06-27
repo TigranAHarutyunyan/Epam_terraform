@@ -7,14 +7,12 @@ provider "kubernetes" {
   client_key             = base64decode(module.aks.kube_config[0].client_key)
   cluster_ca_certificate = base64decode(module.aks.kube_config[0].cluster_ca_certificate)
 }
-resource "local_file" "kubeconfig" {
-  content  = try(module.aks.kube_config_raw, module.aks.kube_config[0].raw_kube_config)
-  filename = "${path.module}/kubeconfig_aks"
-}
 provider "kubectl" {
-  load_config_file = true
-  config_path      = local_file.kubeconfig.filename
-  config_context   = try(module.aks.kube_config[0].context, "")
+  load_config_file       = false
+  host                   = module.aks.kube_config[0].host
+  client_certificate     = base64decode(module.aks.kube_config[0].client_certificate)
+  client_key             = base64decode(module.aks.kube_config[0].client_key)
+  cluster_ca_certificate = base64decode(module.aks.kube_config[0].cluster_ca_certificate)
 }
 resource "azurerm_resource_group" "rg" {
   name     = local.rg_name
