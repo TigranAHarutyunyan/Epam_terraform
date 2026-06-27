@@ -32,7 +32,7 @@ data "kubernetes_service_v1" "app" {
   depends_on = [kubectl_manifest.app_service]
 }
 resource "kubectl_manifest" "app_deployment" {
-  yaml_body = templatefile("${path.module}/k8-manifests/deployment.yaml.tftpl", {
+  yaml_body = templatefile("${path.module}/k8s-manifests/deployment.yaml.tftpl", {
     acr_login_server = module.acr.login_server
     app_image_name   = local.docker_image
     image_tag        = "latest"
@@ -48,7 +48,7 @@ resource "kubectl_manifest" "app_deployment" {
   depends_on = [kubectl_manifest.secret_provider]
 }
 resource "kubectl_manifest" "app_service" {
-  yaml_body = file("${path.module}/k8-manifests/service.yaml")
+  yaml_body = file("${path.module}/k8s-manifests/service.yaml")
 
   wait_for {
     field {
@@ -62,7 +62,7 @@ resource "kubectl_manifest" "app_service" {
 
 
 resource "kubectl_manifest" "secret_provider" {
-  yaml_body = templatefile("${path.module}/k8-manifests/secret-provider.yaml.tftpl", {
+  yaml_body = templatefile("${path.module}/k8s-manifests/secret-provider.yaml.tftpl", {
     aks_kv_access_identity_id  = module.aks.user_assigned_identity_id
     kv_name                    = module.keyvault.key_vault_name
     redis_url_secret_name      = var.key_vault_redis_hostname
