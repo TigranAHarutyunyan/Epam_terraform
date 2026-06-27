@@ -19,3 +19,6 @@ output "user_assigned_identity_id" {
   value       = azurerm_kubernetes_cluster.aks.key_vault_secrets_provider[0].secret_identity[0].client_id
   description = "Client ID of the Key Vault secrets provider identity"
 }
+output "kube_config_raw" {
+  value = azurerm_kubernetes_cluster.aks.kube_config_raw
+}
