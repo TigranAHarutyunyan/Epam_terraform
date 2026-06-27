@@ -1,19 +1,7 @@
 provider "azurerm" {
   features {}
 }
-provider "kubernetes" {
-  host                   = module.aks.kube_config[0].host
-  client_certificate     = base64decode(module.aks.kube_config[0].client_certificate)
-  client_key             = base64decode(module.aks.kube_config[0].client_key)
-  cluster_ca_certificate = base64decode(module.aks.kube_config[0].cluster_ca_certificate)
-}
-provider "kubectl" {
-  load_config_file       = false
-  host                   = module.aks.kube_config[0].host
-  client_certificate     = base64decode(module.aks.kube_config[0].client_certificate)
-  client_key             = base64decode(module.aks.kube_config[0].client_key)
-  cluster_ca_certificate = base64decode(module.aks.kube_config[0].cluster_ca_certificate)
-}
+
 resource "azurerm_resource_group" "rg" {
   name     = local.rg_name
   location = var.location
@@ -22,53 +10,7 @@ resource "azurerm_resource_group" "rg" {
   }
 }
 
-data "kubernetes_service_v1" "app" {
-  metadata {
-    name      = "redis-flask-app-service"
-    namespace = "default"
-  }
-  depends_on = [kubectl_manifest.app_service]
-}
-resource "kubectl_manifest" "app_deployment" {
-  yaml_body = templatefile("${path.module}/k8s-manifests/deployment.yaml.tftpl", {
-    acr_login_server = module.acr.login_server
-    app_image_name   = local.docker_image
-    image_tag        = "latest"
-  })
-
-  wait_for {
-    field {
-      key   = "status.availableReplicas"
-      value = "1"
-    }
-  }
-
-  depends_on = [kubectl_manifest.secret_provider]
-}
-resource "kubectl_manifest" "app_service" {
-  yaml_body = file("${path.module}/k8s-manifests/service.yaml")
-
-  wait_for {
-    field {
-      key        = "status.loadBalancer.ingress.[0].ip"
-      value      = "^(\\d+(\\.|$)){4}"
-      value_type = "regex"
-    }
-  }
-}
-
-
-
-resource "kubectl_manifest" "secret_provider" {
-  yaml_body = templatefile("${path.module}/k8s-manifests/secret-provider.yaml.tftpl", {
-    aks_kv_access_identity_id  = module.aks.user_assigned_identity_id
-    kv_name                    = module.keyvault.key_vault_name
-    redis_url_secret_name      = var.key_vault_redis_hostname
-    redis_password_secret_name = var.key_vault_redis_primary_key
-    tenant_id                  = data.azurerm_client_config.current.tenant_id
-  })
-}
-
+data "azurerm_client_config" "current" {}
 
 module "aci" {
   source            = "./modules/aci"
@@ -98,23 +40,6 @@ module "acr" {
   dockerfile_path   = var.dockerfile_path
   context_path      = var.context_path
 }
-module "aks" {
-  source                  = "./modules/aks"
-  pool_name               = var.pool_name
-  pool_instance_node_size = var.pool_instance_node_size
-  pool_instance_count     = var.pool_instance_count
-  pool_disk_type          = var.pool_disk_type
-  name                    = local.aks_name
-  rg_name                 = azurerm_resource_group.rg.name
-  location                = azurerm_resource_group.rg.location
-  acr_id                  = module.acr.acr_id
-  key_vault_id            = module.keyvault.key_vault_id
-  tenant_id               = data.azurerm_client_config.current.tenant_id
-  creator                 = var.creator
-
-  depends_on = [module.keyvault]
-}
-data "azurerm_client_config" "current" {}
 module "keyvault" {
   source                      = "./modules/keyvault"
   name                        = local.keyvault_name
@@ -138,4 +63,49 @@ module "redis" {
   sku      = var.arcs_sku
   family   = var.arcs_sku_family
   creator  = var.creator
+}
+
+resource "azurerm_kubernetes_cluster" "aks" {
+  name                = local.aks_name
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  dns_prefix          = "company"
+
+  default_node_pool {
+    name            = var.pool_name
+    node_count      = var.pool_instance_count
+    vm_size         = var.pool_instance_node_size
+    os_disk_type    = var.pool_disk_type
+    os_disk_size_gb = 100
+  }
+
+  key_vault_secrets_provider {
+    secret_rotation_enabled = true
+  }
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  oidc_issuer_enabled       = true
+  workload_identity_enabled = true
+
+  tags = {
+    Creator = var.creator
+  }
+
+  depends_on = [module.keyvault]
+}
+
+resource "azurerm_role_assignment" "acr_pull" {
+  scope                = module.acr.acr_id
+  role_definition_name = "ACRpull"
+  principal_id         = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
+}
+
+resource "azurerm_key_vault_access_policy" "aks_secrets_provider" {
+  key_vault_id       = module.keyvault.key_vault_id
+  object_id          = azurerm_kubernetes_cluster.aks.key_vault_secrets_provider[0].secret_identity[0].object_id
+  secret_permissions = ["Get", "List"]
+  tenant_id          = data.azurerm_client_config.current.tenant_id
 }
