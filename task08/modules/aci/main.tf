@@ -20,7 +20,7 @@ resource "azurerm_container_group" "aci" {
       REDIS_PWD = var.redis-primary-key
     }
     ports {
-      port     = 80
+      port     = 8080
       protocol = "TCP"
     }
   }
