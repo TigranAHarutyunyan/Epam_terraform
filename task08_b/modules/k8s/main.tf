@@ -22,7 +22,7 @@ resource "kubectl_manifest" "deployment" {
   }
 }
 resource "kubectl_manifest" "secret-provider" {
-  yaml_body = templatefile("${var.image_name}/secret-provider.yaml.tftpl", {
+  yaml_body = templatefile("${var.manifests_path}/secret-provider.yaml.tftpl", {
     aks_kv_access_identity_id  = var.aks_kv_access_identity_client_id
     tenant_id                  = var.tenant_id
     kv_name                    = var.kv-name

@@ -88,7 +88,7 @@ module "aks" {
 
 module "k8s" {
   source                           = "./modules/k8s"
-  manifests_path                   = "${path.root}/k8s-templates"
+  manifests_path                   = "${path.module}/k8s-manifests"
   image_name                       = local.docker_image
   acr_login_server                 = module.acr.acr-login-server
   tenant_id                        = data.azurerm_client_config.current.tenant_id
