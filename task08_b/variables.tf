@@ -64,6 +64,6 @@ variable "node_pool_os_disk_type" {
   description = "type os disk"
 }
 variable "name_postfix" {
-  type = string
+  type        = string
   description = "name postfix"
 }

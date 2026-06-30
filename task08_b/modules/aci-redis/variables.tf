@@ -31,6 +31,6 @@ variable "redis-hostname" {
   description = "Hostname"
 }
 variable "login-server" {
-  type = string
+  type        = string
   description = "Login Server"
 }

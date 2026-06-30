@@ -1,5 +1,5 @@
 name_prefix                  = "cmtr-j5tku7ra-mod8b"
-name_postfix = "cmtrj5tku7ramod8b"
+name_postfix                 = "cmtrj5tku7ramod8b"
 creator                      = "tigran_harutyunyan@epam.com"
 location                     = "East US"
 acr_sku                      = "Basic"

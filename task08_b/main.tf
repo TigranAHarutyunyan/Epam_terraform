@@ -51,7 +51,7 @@ module "aci-redis" {
   key_vault_id   = module.keyvault.key_vault_id
   redis-hostname = var.redis-hostname
   redis-password = var.redis-password
-  login-server = module.acr.acr-login-server
+  login-server   = module.acr.acr-login-server
 }
 
 
