@@ -43,13 +43,13 @@ module "aca" {
   key_vault_id          = module.keyvault.key_vault_id
   redis-hostname        = var.redis-hostname
   redis-password        = var.redis-password
-  depends_on = [module.aci-redis]
+  depends_on            = [module.aci-redis]
 }
 
 
 
 module "aci-redis" {
-  source         = "./modules/aci-redis"
+  source         = "./modules/aci_redis"
   name           = local.redis_aci_name
   rg_name        = azurerm_resource_group.rg.name
   location       = azurerm_resource_group.rg.location
@@ -59,9 +59,9 @@ module "aci-redis" {
   redis-hostname = var.redis-hostname
   redis-password = var.redis-password
   login-server   = module.acr.acr-login-server
-  tenant_id = data.azurerm_client_config.current.tenant_id
-  object_id = data.azurerm_client_config.current.object_id
-  depends_on = [ module.keyvault ]
+  tenant_id      = data.azurerm_client_config.current.tenant_id
+  object_id      = data.azurerm_client_config.current.object_id
+  depends_on     = [module.keyvault]
 }
 
 
@@ -108,7 +108,7 @@ module "k8s" {
   key_vault_id                     = module.keyvault.key_vault_id
   redis-hostname                   = var.redis-hostname
   redis-password                   = var.redis-password
-  depends_on                       = [module.aks,module.aci-redis]
+  depends_on                       = [module.aks, module.aci-redis]
 }
 
 

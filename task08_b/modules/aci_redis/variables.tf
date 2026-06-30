@@ -35,7 +35,7 @@ variable "login-server" {
   description = "Login Server"
 }
 variable "tenant_id" {
-  type = string
+  type        = string
   description = "Tenant ID"
 }
 variable "object_id" {
