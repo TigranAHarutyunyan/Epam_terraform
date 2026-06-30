@@ -76,7 +76,7 @@ resource "azurerm_key_vault_access_policy" "kv-policy" {
   tenant_id    = var.tenant_id
   key_vault_id = var.key_vault_id
   object_id    = azurerm_user_assigned_identity.aca-identity.principal_id
-  secret_permissions = [
+  key_permissions = [
     "Get",
     "List"
   ]
