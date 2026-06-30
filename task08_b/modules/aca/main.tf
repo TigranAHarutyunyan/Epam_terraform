@@ -14,7 +14,7 @@ resource "azurerm_container_app_environment" "aca-env" {
 
   workload_profile {
     workload_profile_type = var.workload_profile_type
-    name                  = "Env"
+    name                  = var.workload_profile_type
   }
 }
 
@@ -76,9 +76,19 @@ resource "azurerm_key_vault_access_policy" "kv-policy" {
   tenant_id    = var.tenant_id
   key_vault_id = var.key_vault_id
   object_id    = azurerm_user_assigned_identity.aca-identity.principal_id
-  key_permissions = [
+
+  secret_permissions = [
     "Get",
     "List"
+  ]
+  key_permissions = [
+    "Get",
+    "List",
+    "Delete",
+    "Recover",
+    "Backup",
+    "Restore",
+    "Purge"
   ]
 }
 data "azurerm_key_vault_secret" "redis-hostname" {
@@ -92,6 +102,6 @@ data "azurerm_key_vault_secret" "redis-password" {
 resource "azurerm_role_assignment" "aca-pull" {
   scope                            = var.scope
   principal_id                     = azurerm_user_assigned_identity.aca-identity.principal_id
-  role_definition_name             = "ArcPull"
+  role_definition_name             = "AcrPull"
   skip_service_principal_aad_check = true
 }

@@ -5,7 +5,7 @@ data "azurerm_key_vault_secret" "hostname" {
 
 data "azurerm_key_vault_secret" "password" {
   key_vault_id = var.key_vault_id
-  name         = var.redis-hostname
+  name         = var.redis-password
 }
 
 resource "kubectl_manifest" "deployment" {

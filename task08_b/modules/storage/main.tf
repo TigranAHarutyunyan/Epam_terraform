@@ -15,7 +15,7 @@ resource "azurerm_storage_container" "asc" {
   container_access_type = var.conatiner_access_type
 }
 resource "azurerm_storage_blob" "app-blob" {
-  name                   = "Tar  blob"
+  name                   = "application.tar.gz"
   storage_account_name   = azurerm_storage_account.storage.name
   storage_container_name = azurerm_storage_container.asc.name
   type                   = "Block"

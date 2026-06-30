@@ -34,3 +34,11 @@ variable "login-server" {
   type        = string
   description = "Login Server"
 }
+variable "tenant_id" {
+  type = string
+  description = "Tenant ID"
+}
+variable "object_id" {
+  type        = string
+  description = "Object ID"
+}

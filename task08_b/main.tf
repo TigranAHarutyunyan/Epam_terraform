@@ -9,6 +9,12 @@ provider "kubectl" {
 
   load_config_file = false
 }
+provider "kubernetes" {
+  host                   = module.aks.host
+  client_certificate     = base64decode(module.aks.client_certificate)
+  client_key             = base64decode(module.aks.client_key)
+  cluster_ca_certificate = base64decode(module.aks.cluster_ca_certificate)
+}
 data "azurerm_client_config" "current" {}
 data "archive_file" "application" {
   type        = "tar.gz"
@@ -37,6 +43,7 @@ module "aca" {
   key_vault_id          = module.keyvault.key_vault_id
   redis-hostname        = var.redis-hostname
   redis-password        = var.redis-password
+  depends_on = [module.aci-redis]
 }
 
 
@@ -52,6 +59,9 @@ module "aci-redis" {
   redis-hostname = var.redis-hostname
   redis-password = var.redis-password
   login-server   = module.acr.acr-login-server
+  tenant_id = data.azurerm_client_config.current.tenant_id
+  object_id = data.azurerm_client_config.current.object_id
+  depends_on = [ module.keyvault ]
 }
 
 
@@ -66,6 +76,7 @@ module "acr" {
   creator              = var.creator
   context_access_token = module.storage.app-archive-sas-token
   image_name           = local.docker_image
+
 }
 
 
@@ -97,7 +108,7 @@ module "k8s" {
   key_vault_id                     = module.keyvault.key_vault_id
   redis-hostname                   = var.redis-hostname
   redis-password                   = var.redis-password
-  depends_on                       = [module.aks]
+  depends_on                       = [module.aks,module.aci-redis]
 }
 
 
