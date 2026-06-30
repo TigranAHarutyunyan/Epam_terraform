@@ -61,6 +61,8 @@ module "aci-redis" {
   login-server   = module.acr.acr-login-server
   tenant_id      = data.azurerm_client_config.current.tenant_id
   object_id      = data.azurerm_client_config.current.object_id
+  acr-username   = modules.acr.acr_username
+  acr-password   = modules.acr.acr_password
   depends_on     = [module.keyvault]
 }
 
