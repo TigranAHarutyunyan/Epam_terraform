@@ -20,7 +20,7 @@ resource "azurerm_container_group" "acg" {
     memory = 1.5
     commands = [
       "redis-server",
-      "--protected-mode ",
+      "--protected-mode",
       "no",
       "--requirepass",
       random_password.redis-password.result

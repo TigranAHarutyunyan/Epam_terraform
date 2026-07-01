@@ -3,6 +3,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   resource_group_name = var.rg_name
   location            = var.location
   dns_prefix          = "company"
+
   default_node_pool {
     name            = var.node_pool_name
     vm_size         = var.node_pool_instance_node_size

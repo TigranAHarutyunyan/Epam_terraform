@@ -7,11 +7,10 @@ provider "azurerm" {
 }
 provider "kubectl" {
   host                   = module.aks.host
+  cluster_ca_certificate = base64decode(module.aks.cluster_ca_certificate)
   client_certificate     = base64decode(module.aks.client_certificate)
   client_key             = base64decode(module.aks.client_key)
-  cluster_ca_certificate = base64decode(module.aks.cluster_ca_certificate)
-
-  load_config_file = false
+  load_config_file       = false
 }
 provider "kubernetes" {
   host                   = module.aks.host
@@ -109,10 +108,8 @@ module "k8s" {
   tenant_id                        = data.azurerm_client_config.current.tenant_id
   aks_kv_access_identity_client_id = module.aks.aks_kv_access_identity_client_id
   kv-name                          = module.keyvault.kv-name
-  key_vault_id                     = module.keyvault.key_vault_id
-  redis-hostname                   = var.redis-hostname
-  redis-password                   = var.redis-password
-  depends_on                       = [module.aks, module.aci-redis]
+  redis-hostname                   = module.aci-redis.redis_hostname_secret_name
+  redis-password                   = module.aci-redis.redis_password_secret_name
 }
 
 

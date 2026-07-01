@@ -22,10 +22,6 @@ variable "kv-name" {
   type        = string
   description = "Name of key vault"
 }
-variable "key_vault_id" {
-  type        = string
-  description = "Id of keyvault"
-}
 variable "redis-password" {
   type        = string
   description = "Password"

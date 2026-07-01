@@ -1,13 +1,3 @@
-data "azurerm_key_vault_secret" "hostname" {
-  key_vault_id = var.key_vault_id
-  name         = var.redis-hostname
-}
-
-data "azurerm_key_vault_secret" "password" {
-  key_vault_id = var.key_vault_id
-  name         = var.redis-password
-}
-
 resource "kubectl_manifest" "deployment" {
   yaml_body = templatefile("${var.manifests_path}/deployment.yaml.tftpl", {
     acr_login_server = var.acr_login_server
@@ -28,10 +18,9 @@ resource "kubectl_manifest" "secret-provider" {
     aks_kv_access_identity_id  = var.aks_kv_access_identity_client_id
     tenant_id                  = var.tenant_id
     kv_name                    = var.kv-name
-    redis_url_secret_name      = data.azurerm_key_vault_secret.hostname.value
-    redis_password_secret_name = data.azurerm_key_vault_secret.password.value
+    redis_url_secret_name      = var.redis-hostname
+    redis_password_secret_name = var.redis-password
   })
-    depends_on = [kubectl_manifest.service]
 }
 resource "kubectl_manifest" "service" {
   yaml_body = file("${var.manifests_path}/service.yaml")
@@ -52,5 +41,4 @@ data "kubernetes_service_v1" "app" {
     kubectl_manifest.service
   ]
 }
-
 
