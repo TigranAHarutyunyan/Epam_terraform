@@ -44,8 +44,8 @@ resource "azurerm_container_app" "aca" {
     container {
       name   = "web-app"
       image  = "${var.aca-login-server}/${var.image_name}"
-      cpu    = 2
-      memory = "0.5Gi"
+      cpu    =  1
+      memory = "2.0Gi"
       env {
         name  = "CREATOR"
         value = "ACA"
@@ -64,7 +64,15 @@ resource "azurerm_container_app" "aca" {
       }
     }
   }
+  registry {
+    server   = var.aca-login-server
+    identity = azurerm_user_assigned_identity.aca-identity.id
+  }
   depends_on = [azurerm_role_assignment.aca-pull]
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.aca-identity.id]
+  }
 }
 
 resource "azurerm_user_assigned_identity" "aca-identity" {
@@ -79,7 +87,9 @@ resource "azurerm_key_vault_access_policy" "kv-policy" {
 
   secret_permissions = [
     "Get",
-    "List"
+    "List",
+    "Delete",
+    "Purge"
   ]
   key_permissions = [
     "Get",
