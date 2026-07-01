@@ -12,14 +12,9 @@ resource "azurerm_container_group" "acg" {
   sku                 = var.sku
   os_type             = "Linux"
   dns_name_label      = "redis-db"
-  image_registry_credential {
-    server   = var.login-server
-    username = data.azurerm_key_vault_secret.redis-hostname.result
-    password = data.azurerm_key_vault_secret.redis-password.result
-  }
   container {
     name   = "redis-container"
-    image  = "${var.login-server}/redis:7-alpine"
+    image  = "redis:7-alpine"
     cpu    = 1
     memory = 1.5
     commands = [
