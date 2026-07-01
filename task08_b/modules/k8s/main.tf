@@ -14,12 +14,14 @@ resource "kubectl_manifest" "deployment" {
     app_image_name   = var.image_name
     image_tag        = "latest"
   })
+
   wait_for {
     field {
       key   = "status.availableReplicas"
       value = "1"
     }
   }
+  depends_on = [kubectl_manifest.secret-provider]
 }
 resource "kubectl_manifest" "secret-provider" {
   yaml_body = templatefile("${var.manifests_path}/secret-provider.yaml.tftpl", {
@@ -28,6 +30,7 @@ resource "kubectl_manifest" "secret-provider" {
     kv_name                    = var.kv-name
     redis_url_secret_name      = data.azurerm_key_vault_secret.hostname.value
     redis_password_secret_name = data.azurerm_key_vault_secret.password.value
+    depends_on = [kubectl_manifest.service]
   })
 }
 resource "kubectl_manifest" "service" {
